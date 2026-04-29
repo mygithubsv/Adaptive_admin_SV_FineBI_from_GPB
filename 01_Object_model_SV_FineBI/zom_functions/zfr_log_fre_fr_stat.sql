@@ -24,38 +24,38 @@ execute 'delete from public.z01_log_fre_fr_stat where time_event_start >= date''
 --
 execute 'insert into public.z01_log_fre_fr_stat
 select 
-	e.executetype
+	ex.executetype
 	,et.op_code 
 	,et.op_cat 
 	,et.op_type 
 	,et.module_name 
-	,to_timestamp(e.time::bigint/1000) as time_event_start --?
-	,to_timestamp(e.time::bigint/1000)::timestamp + e.consume/1000 * interval ''1 second'' as time_event_end --?
-	,(e.consume/1000 * interval ''1 second'') as dur_event
-	,to_timestamp(e.lastmod::bigint/1000) as last_mod_template
-	,e.memory as ram_size--Report occupies memory, unit B
-	,e.consume as consume_all --Including SQL execution time and report calculation time, The unit is ms
-	,e.querytime as consume_query 
-	,e.displayname as rep_name
-	,e.tname as rep_file
-	,e.reportid
+	,to_timestamp(ex.time::bigint/1000) as time_event_start --?
+	,to_timestamp(ex.time::bigint/1000)::timestamp + ex.consume/1000 * interval ''1 second'' as time_event_end --?
+	,(ex.consume/1000 * interval ''1 second'') as dur_event
+	,to_timestamp(ex.lastmod::bigint/1000) as last_mod_template
+	,ex.memory as ram_size--Report occupies memory, unit B
+	,ex.consume as consume_all --Including SQL execution time and report calculation time, The unit is ms
+	,ex.querytime as consume_query 
+	,ex.displayname as rep_name
+	,ex.tname as rep_file
+	,ex.reportid
 	,case when "error" is not null then 1 else 0 end as is_error
-	,e."error" as err_msg
-	,e.node
-	,e."source"
-	,length(e.query) as len_query
-	,(length(e.query)-length(replace(e.query,''SQL: '','''')))/length(''SQL: '') as cnt_sqlq
-	,case when (length(e.query)-length(replace(e.query,''SQL: '','''')))/length(''SQL: '') > 1 then substring(replace(e.query,''SQL: '',e''\nSQL: ''),2) else e.query end as sql_text 
-	,e.userid
-	,split_part(split_part(e.username,''('',2),'')'',1) as user_login--,e.userrole
-	,split_part(replace((e.webinfo::jsonb -> ''webResolution'')::text,''"'',''''),''*'',1) as webResolution_width
-	,split_part(replace((e.webinfo::jsonb -> ''webResolution'')::text,''"'',''''),''*'',2) as webResolution_height
-	,replace((e.webinfo::jsonb -> ''fullScreen'')::text,''"'','''') as fullScreen
-	,date_trunc(''quarter'', to_timestamp(e.time::bigint/1000)) as year_quarter
-from schema_logdb_fdw.fine_record_execute e
-left join public.z01_dict_fre_op_type et on et.op_code = e.executetype
-where to_timestamp(e.time::bigint/1000) >= date'''||last_date||'''
-order by e.time desc
+	,ex."error" as err_msg
+	,ex.node
+	,ex."source"
+	,length(ex.query) as len_query
+	,(length(ex.query)-length(replace(ex.query,''SQL: '','''')))/length(''SQL: '') as cnt_sqlq
+	,case when (length(ex.query)-length(replace(ex.query,''SQL: '','''')))/length(''SQL: '') > 1 then substring(replace(ex.query,''SQL: '',e''\nSQL: ''),2) else ex.query end as sql_text 
+	,ex.userid
+	,split_part(split_part(ex.username,''('',2),'')'',1) as user_login--,ex.userrole
+	,split_part(replace((ex.webinfo::jsonb -> ''webResolution'')::text,''"'',''''),''*'',1) as webResolution_width
+	,split_part(replace((ex.webinfo::jsonb -> ''webResolution'')::text,''"'',''''),''*'',2) as webResolution_height
+	,replace((ex.webinfo::jsonb -> ''fullScreen'')::text,''"'','''') as fullScreen
+	,date_trunc(''quarter'', to_timestamp(ex.time::bigint/1000)) as year_quarter
+from schema_logdb_fdw.fine_record_execute ex
+left join public.z01_dict_fre_op_type et on et.op_code = ex.executetype
+where to_timestamp(ex.time::bigint/1000) >= date'''||last_date||'''
+order by ex.time desc
 ;';
 --#CODE OPERATION
 is_corr = true;

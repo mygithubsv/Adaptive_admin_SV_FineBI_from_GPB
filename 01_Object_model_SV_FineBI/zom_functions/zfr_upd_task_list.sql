@@ -6,7 +6,7 @@ AS $function$
 declare
 	is_corr boolean;
 	ses_id text default to_char(now(),'yyyyMMddhh24mmss');
-	proc_name text default 'zfr_alloc_system_resorce_dir4redirect';
+	proc_name text default 'zfr_upd_task_list';
 begin
 	begin
 call public.zfr_proc_log(proc_name,0,ses_id);
@@ -52,7 +52,7 @@ select
 	when replace(timelist_frequency_type::text,'"','') = '4' then replace(timelist_cron::text,'"','') 
 	when replace(timelist_frequency_type::text,'"','') = '2' then 
 	  '0 '||extract(minute from to_timestamp(timelist_starttime::bigint/1000)::timestamp)||' '||extract(hour from to_timestamp(timelist_starttime::bigint/1000)::timestamp)||'/'||
-	  (case when try_cast_int(replace(timelist_cron::text,'"','')) > 3600000 then (24/(timelist_frequency_value_space::int))::text else '1' end)
+	  (case when public.try_cast_int(replace(timelist_cron::text,'"','')) > 3600000 then (24/(timelist_frequency_value_space::int))::text else '1' end)
 	  ||' ? * * *'
 	else null
 	end
