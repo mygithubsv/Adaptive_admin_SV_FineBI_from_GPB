@@ -61,7 +61,7 @@ begin
 				raise info e'S [%] %', clock_timestamp(), rec.func_name;
 				execute ('select public.'||rec.func_name||'()::int;') into stage_inc; 
 				--
-				stage_corr := stage_corr + stage_inc; 
+				stage_corr := stage_corr + coalesce(stage_inc,0); 
 				stage_all := stage_all + 1; 
 				raise info e'E [%] %', clock_timestamp(), rec.func_name;
 			exception

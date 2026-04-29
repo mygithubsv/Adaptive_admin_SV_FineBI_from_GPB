@@ -38,12 +38,12 @@ t_buf as (
 		,u.taskName as upd_taskName
 		,ud.loadType as upd_loadType
 		,ud.updateType as upd_updateType
-		,to_timestamp(ud.startTime / 1000)::timestamp as upd_startTime
-		,to_timestamp(ud.endTime / 1000)::timestamp as upd_endTime
-		,case when ud.endTime > ud.startTime then (ud.endTime - ud.startTime)/60/60*4 else null end as upd_totalTime_sec
-		,coalesce(ud.openTime,0)/60/60*4 as upd_openTime_sec
-		,coalesce(ud.writeTime,0)/60/60*4 as upd_writeTime_sec
-		,coalesce(ud.jdbcTime,0)/60/60*4 as upd_jdbcTime_sec
+		,to_timestamp(ud.startTime/1000)::timestamp as upd_startTime
+		,to_timestamp(ud.endTime/1000)::timestamp as upd_endTime
+		,case when ud.endTime > ud.startTime then (ud.endTime - ud.startTime)/1000 else null end as upd_totalTime_sec
+		,coalesce(ud.openTime,0)/1000 as upd_openTime_sec
+		,coalesce(ud.writeTime,0)/1000 as upd_writeTime_sec
+		,coalesce(ud.jdbcTime,0)/1000 as upd_jdbcTime_sec
 		 ,ud.stateType as upd_stateType
 		,u.roleName as upd_roleName
 		,u.runningResult as upd_runningResult
@@ -51,7 +51,7 @@ t_buf as (
 	from public.fine_update_task_detail ud
 	left join public.fine_update_task u on ud.planId = u.planId
 	where length(ud.tableName)>0
-	and to_timestamp(ud.endTime / 1000)::timestamp >= current_date-7
+	and to_timestamp(ud.endTime/1000)::timestamp >= current_date-7
 	order by ud.tableName, ud.startTime desc
 ),
 t_res as (

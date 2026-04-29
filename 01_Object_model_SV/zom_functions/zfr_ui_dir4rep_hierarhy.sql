@@ -151,9 +151,9 @@ t_fine_dashboard_index as (
 	-- результирующий сет
 	select 
 		replace(t.entity_key,'\"','') as id
-		,trim(both n'\"' from t.reportId) as reportId
-		,trim(both n'\"' from t.name) as name
-		,trim(both n'\"' from t.createBy) as createBy
+		,trim(both e'\"' from t.reportId) as reportId
+		,trim(both e'\"' from t.name) as name
+		,trim(both e'\"' from t.createBy) as createBy
 		,t.waterMark as waterMark
 		,t.initTime::bigint	as initTime
 		,u.updateTime::bigint 	as lastupdatetime
